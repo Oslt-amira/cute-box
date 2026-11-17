@@ -20,7 +20,6 @@ import {
   RotateCcw,
   Trash2,
   Type,
-  X,
 } from "lucide-react";
 import {
   loadItems,
@@ -35,6 +34,7 @@ import MusicWidget from "@/components/MusicWidget";
 import Typewriter from "@/components/Typewriter";
 import UploadLibrary from "@/components/UploadLibrary";
 import PixelPet from "@/components/PixelPet";
+import DeskWindow from "@/components/DeskWindow";
 import DeskObject from "@/components/DeskObject";
 import { usePointerNote } from "@/components/usePointerNote";
 export default function Home() {
@@ -201,6 +201,7 @@ export default function Home() {
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement ||
+        (event.target instanceof Element && event.target.closest(".desk-window")) ||
         writer ||
         libraryOpen ||
         !open
@@ -393,73 +394,13 @@ export default function Home() {
       {!open && boxNote.note}
 
       <AnimatePresence>
-        {(dockOpen || panel || selected) && (
+        {(dockOpen || selected) && (
           <motion.div
             className="tools-area"
             initial={{ y: 35, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 35, opacity: 0 }}
           >
-            <AnimatePresence>
-              {panel && (
-                <motion.aside
-                  className="tool-panel glass"
-                  initial={{ y: 12, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: 12, opacity: 0 }}
-                >
-                  <div className="panel-heading">
-                    <strong>Inside your box</strong>
-                    <button
-                      aria-label="Close panel"
-                      onClick={() => setPanel(null)}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <div className="layer-list">
-                    {sorted.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className={`layer-row ${selectedId === item.id ? "active" : ""}`}
-                      >
-                        <button
-                          className="layer-name"
-                          onClick={() => setSelectedId(item.id)}
-                        >
-                          {item.type === "note" ? (
-                            <Type size={15} />
-                          ) : (
-                            <ImagePlus size={15} />
-                          )}
-                          <span>{item.name}</span>
-                        </button>
-                        <button
-                          disabled={index === 0}
-                          title="Move forward"
-                          onClick={() => layer(item.id, 1)}
-                        >
-                          <ArrowUp size={14} />
-                        </button>
-                        <button
-                          disabled={index === sorted.length - 1}
-                          title="Move backward"
-                          onClick={() => layer(item.id, -1)}
-                        >
-                          <ArrowDown size={14} />
-                        </button>
-                      </div>
-                    ))}
-                    <div className="layer-row base-layer">
-                      <Box size={16} />
-                      <span>Silver box</span>
-                      <Lock size={13} />
-                      <small>Always the base</small>
-                    </div>
-                  </div>
-                </motion.aside>
-              )}
-            </AnimatePresence>
             {selected && (
               <div className="selection-bar glass">
                 <span>{selected.name}</span>
@@ -554,28 +495,75 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-      {libraryOpen && (
-        <UploadLibrary
-          assets={assets}
-          onClose={() => setLibraryOpen(false)}
-          onUpload={() => fileRef.current?.click()}
-          onPlace={(asset) =>
-            add(
-              { type: "image", src: asset.src },
-              asset.name,
-              asset.width,
-              asset.height,
-            )
-          }
-        />
-      )}
-      {pet && <PixelPet onClose={() => setPet(false)} />}
-      <div
-        className={`music-position ${music ? "" : "widget-hidden"}`}
-        inert={!music}
-        aria-hidden={!music}
-      >
-        <MusicWidget onClose={() => setMusic(false)} />
+      <div className="desk-window-layer">
+        <AnimatePresence>
+          {panel && (
+            <DeskWindow className="layers-window" title="Inside your box" onClose={() => setPanel(null)}>
+              <div className="layer-list">
+                {sorted.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`layer-row ${selectedId === item.id ? "active" : ""}`}
+                  >
+                    <button
+                      className="layer-name"
+                      onClick={() => setSelectedId(item.id)}
+                    >
+                      {item.type === "note" ? (
+                        <Type size={15} />
+                      ) : (
+                        <ImagePlus size={15} />
+                      )}
+                      <span>{item.name}</span>
+                    </button>
+                    <button
+                      disabled={index === 0}
+                      title="Move forward"
+                      onClick={() => layer(item.id, 1)}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button
+                      disabled={index === sorted.length - 1}
+                      title="Move backward"
+                      onClick={() => layer(item.id, -1)}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                  </div>
+                ))}
+                <div className="layer-row base-layer">
+                  <Box size={16} />
+                  <span>Silver box</span>
+                  <Lock size={13} />
+                  <small>Always the base</small>
+                </div>
+              </div>
+            </DeskWindow>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {libraryOpen && (
+            <UploadLibrary
+              assets={assets}
+              onClose={() => setLibraryOpen(false)}
+              onUpload={() => fileRef.current?.click()}
+              onPlace={(asset) =>
+                add(
+                  { type: "image", src: asset.src },
+                  asset.name,
+                  asset.width,
+                  asset.height,
+                )
+              }
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {pet && <PixelPet onClose={() => setPet(false)} />}
+        </AnimatePresence>
+        <MusicWidget visible={music} onClose={() => setMusic(false)} />
       </div>
       <input
         hidden

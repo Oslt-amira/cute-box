@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { get, set } from "idb-keyval";
-import { ExternalLink, Music2, Pencil, X } from "lucide-react";
+import { ExternalLink, Pencil, X } from "lucide-react";
+
+import DeskWindow from "@/components/DeskWindow";
 
 export function spotifyPlaylistId(value: string): string | null {
   const uri = /^spotify:playlist:([A-Za-z0-9]{22})$/.exec(value.trim());
@@ -19,7 +21,7 @@ export function spotifyPlaylistId(value: string): string | null {
     return null;
   }
 }
-export default function MusicWidget({ onClose }: { onClose: () => void }) {
+export default function MusicWidget({ onClose, visible }: { onClose: () => void; visible: boolean }) {
   const [playlist, setPlaylist] = useState<string | null>(null),
     [draft, setDraft] = useState(""),
     [editing, setEditing] = useState(false),
@@ -53,29 +55,17 @@ export default function MusicWidget({ onClose }: { onClose: () => void }) {
     }
   }
   return (
-    <section
-      className="spotify-widget os-window"
-      aria-label="Spotify music widget"
+    <DeskWindow
+      className="spotify-widget"
+      title="Your soundtrack"
+      onClose={onClose}
+      visible={visible}
+      actions={playlist && (
+        <button aria-label={editing ? "Cancel playlist edit" : "Change Spotify playlist"} onClick={() => setEditing(!editing)}>
+          {editing ? <X size={15} /> : <Pencil size={15} />}
+        </button>
+      )}
     >
-      <div className="os-titlebar">
-        <Music2 size={15} />
-        <strong>Your soundtrack</strong>
-        <div className="widget-title-actions">
-          {playlist && (
-            <button
-              aria-label={
-                editing ? "Cancel playlist edit" : "Change Spotify playlist"
-              }
-              onClick={() => setEditing(!editing)}
-            >
-              {editing ? <X size={13} /> : <Pencil size={13} />}
-            </button>
-          )}
-          <button aria-label="Close music player" onClick={onClose}>
-            <X size={14} />
-          </button>
-        </div>
-      </div>
       {(!playlist || editing) && (
         <form
           className="spotify-setup"
@@ -123,6 +113,6 @@ export default function MusicWidget({ onClose }: { onClose: () => void }) {
           {error}
         </p>
       )}
-    </section>
+    </DeskWindow>
   );
 }

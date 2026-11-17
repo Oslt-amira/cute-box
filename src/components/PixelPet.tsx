@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { get, set } from "idb-keyval";
-import { Apple, Heart, Moon, Sun, Volleyball, X } from "lucide-react";
+import { Apple, Heart, Moon, Sun, Volleyball } from "lucide-react";
+
+import DeskWindow from "@/components/DeskWindow";
 
 const CAT = [
   "................",
@@ -142,18 +144,7 @@ export default function PixelPet({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <section className="pet-window os-window" aria-label="Mochi pixel pet">
-      <div className="os-titlebar">
-        <button
-          className="traffic-close"
-          aria-label="Close pet"
-          onClick={onClose}
-        >
-          <X size={10} />
-        </button>
-        <strong>A little company</strong>
-        <span>♡</span>
-      </div>
+    <DeskWindow className="pet-window" title="A little company" onClose={onClose}>
       <div
         className={`pet-screen ${pet.sleeping ? "pet-sleeping" : ""} activity-${activity}`}
       >
@@ -275,6 +266,6 @@ export default function PixelPet({ onClose }: { onClose: () => void }) {
       <footer>
         <Heart size={10} /> A tiny Mochi.
       </footer>
-    </section>
+    </DeskWindow>
   );
 }

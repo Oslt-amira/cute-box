@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDownRight, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowDownRight, Volume2, VolumeX } from "lucide-react";
+import DeskWindow from "@/components/DeskWindow";
+
 export default function Typewriter({
   initialText,
   onSave,
@@ -49,36 +51,22 @@ export default function Typewriter({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onKeyDown={(event) => {
-        if (event.key === "Escape" && !eject) onClose();
-      }}
     >
-      <motion.section
+      <DeskWindow
         className="typewriter-window"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Typewriter"
-        initial={{ y: 40, scale: 0.95 }}
-        animate={{ y: 0, scale: 1 }}
-        exit={{ y: 30, scale: 0.95 }}
-      >
-        <div className="writer-titlebar">
-          <button
-            className="traffic-close"
-            aria-label="Close typewriter"
-            disabled={eject}
-            onClick={onClose}
-          >
-            <X size={10} />
-          </button>
-          <span>The little typewriter</span>
+        title="The little typewriter"
+        modal
+        onClose={onClose}
+        closeDisabled={eject}
+        actions={
           <button
             aria-label={sound ? "Mute typing sound" : "Enable typing sound"}
             onClick={() => setSound(!sound)}
           >
             {sound ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
-        </div>
+        }
+      >
         <div className="writer-paper-slot">
           <motion.div
             className="writer-paper"
@@ -157,7 +145,7 @@ export default function Typewriter({
             <span className="tuck-arrow" aria-hidden="true"><ArrowDownRight size={16}/></span>
           </button>
         </div>
-      </motion.section>
+      </DeskWindow>
     </motion.div>
   );
 }
