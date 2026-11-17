@@ -191,3 +191,26 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
   .desk-window.layers-window { bottom: 126px; }
   .desk-window-bar { padding-left: 12px; flex-basis: 48px; }
 }
+
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+  .desktop {
+    cursor: url("/trinket-cursor.svg") 5 4, auto;
+  }
+
+  .desktop :is(button:enabled, a[href]):not(.object-handle) {
+    cursor: url("/trinket-cursor-active.svg") 5 4, pointer;
+  }
+
+  .desktop :is(input:not([type]), input[type="text"], input[type="url"], textarea) {
+    cursor: text;
+  }
+}
+.desktop :is(.keepsake:not(.keepsake-locked), .rotate-handle, .desk-window-bar) {
+  cursor: move;
+}
+
+@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+  .desktop :is(.keepsake:not(.keepsake-locked), .rotate-handle, .desk-window-bar) {
+    cursor: url("/trinket-cursor-move.svg") 12 12, move;
+  }
+}
